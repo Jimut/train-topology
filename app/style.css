@@ -4,8 +4,10 @@
   stroke-linejoin: round;
   stroke-linecap: round;
   stroke-width: 2;
+  transition: all 100ms ease-in-out;
 }
 
 .tracks > path:hover {
   stroke-width: 4;
+  cursor: pointer;
 }
