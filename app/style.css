@@ -1,0 +1,11 @@
+.tracks > path {
+  fill: none;
+  stroke: steelblue;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  stroke-width: 2;
+}
+
+.tracks > path:hover {
+  stroke-width: 4;
+}
