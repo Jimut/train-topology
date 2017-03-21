@@ -1,9 +1,18 @@
 [
   {
     "id": "TR1",
+    "color": "#D32F2F",
     "completion": "70%",
     "tracks": [
       "TT8", "TT2", "TT9", "TT10", "TT13", "TT14"
+    ]
+  },
+  {
+    "id": "TR2",
+    "color": "#3F51B5",
+    "completion": "20%",
+    "tracks": [
+      "TT11", "TT12", "TT4", "TT5"
     ]
   }
 ]

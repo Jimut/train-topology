@@ -1,14 +1,13 @@
 .track > path {
   fill: none;
-  stroke: steelblue;
+  stroke: #607D8B;
   stroke-linejoin: round;
   stroke-linecap: round;
-  stroke-width: 2;
+  stroke-width: 1;
 }
 
 .train > path {
   fill: none;
-  stroke: #D32F2F;
   stroke-linejoin: round;
   stroke-linecap: round;
   stroke-width: 2;
