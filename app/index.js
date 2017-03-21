@@ -76,4 +76,15 @@ function drawTrains (data) {
     .attr('train-id', d => d.id)
     .append('path')
     .attr('d', d => (line(d.coords)));
+
+  document.querySelectorAll('.train > path').forEach(elm => {
+    let len = elm.getTotalLength();
+
+    let id = elm.parentNode.getAttribute('train-id');
+    let completion = trainData.find(tn => (tn.id === id)).completion;
+    completion = completion.substr(0, 2)/100;
+
+    elm.setAttribute('stroke-dasharray', len);
+    elm.setAttribute('stroke-dashoffset', len * completion);
+  });
 }
