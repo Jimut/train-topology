@@ -1,13 +1,20 @@
-.tracks > path {
+.track > path {
   fill: none;
   stroke: steelblue;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  stroke-width: 2;
+}
+
+.train > path {
+  fill: none;
+  stroke: #D32F2F;
   stroke-linejoin: round;
   stroke-linecap: round;
   stroke-width: 2;
   transition: all 100ms ease-in-out;
 }
 
-.tracks > path:hover {
+.train > path:hover {
   stroke-width: 4;
-  cursor: pointer;
 }

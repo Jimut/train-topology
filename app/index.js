@@ -14,42 +14,66 @@ const line = d3.line()
   .x(d => x(d.x))
   .y(d => y(d.y));
 
-// Make shadow filter
-// const defs = svg.append('defs');
-// const filter = defs.append('filter')
-//   .attr('id', 'drop-shadow')
-//   .attr('height', '130%');
-//
-// filter.append("feGaussianBlur")
-//   .attr("in", "SourceAlpha")
-//   .attr("stdDeviation", 5)
-//   .attr("result", "blur");
-//
-// filter.append("feOffset")
-//   .attr("in", "blur")
-//   .attr("dx", 5)
-//   .attr("dy", 5)
-//   .attr("result", "offsetBlur");
-//
-// const feMerge = filter.append("feMerge");
-// feMerge.append("feMergeNode")
-//   .attr("in", "offsetBlur");
-// feMerge.append("feMergeNode")
-//   .attr("in", "SourceGraphic");
+let trackData;
+let trainData;
 
-d3.json('app/data.json', (err, data) => {
+// Make the json requests
+d3.json('app/track-data.json', (err, data) => {
   if (err)
     console.warn(err);
 
+  trackData = data;
+  drawTracks(data);
+
+  d3.json('app/train-data.json', (err, data) => {
+    if (err)
+      console.warn(err);
+
+    trainData = data;
+    drawTrains(data);
+  });
+});
+
+function drawTracks (data) {
   // Set domains
   x.domain(d3.extent([...data.map(d => d.coords[0].x), ...data.map(d => d.coords[1].x)]));
   y.domain(d3.extent([...data.map(d => d.coords[0].y), ...data.map(d => d.coords[1].y)]));
 
-  // Now draw
-  let tracks = g.selectAll('.tracks').data(data)
-    .enter()
+  // Draw tracks
+  g.append('g')
+    .attr('class', 'track-wrapper')
+    .selectAll('.track')
+    .data(data).enter()
     .append('g')
-    .attr('class', 'tracks')
+    .attr('class', 'track')
+    .attr('track-id', d => d.id)
     .append('path')
     .attr('d', d => (line(d.coords)));
-});
+}
+
+function drawTrains (data) {
+  // Calculate coordinates of train's path
+  data = data.map(train => {
+    let coords = [];
+
+    train.tracks.forEach(track => {
+      let tr = trackData.find(trData => (trData.id === track));
+
+      coords.push(...tr.coords);
+    });
+
+    train.coords = coords;
+    return train;
+  });
+
+  // Draw trains
+  g.append('g')
+    .attr('class', 'train-wrapper')
+    .selectAll('.train')
+    .data(data).enter()
+    .append('g')
+    .attr('class', 'train')
+    .attr('train-id', d => d.id)
+    .append('path')
+    .attr('d', d => (line(d.coords)));
+}
