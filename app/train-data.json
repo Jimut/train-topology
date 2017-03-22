@@ -2,15 +2,21 @@
   {
     "id": "TR1",
     "color": "#D32F2F",
-    "completion": "70%",
+    "extent": [
+      { "x": 420, "y": 7 },
+      { "x": 50,  "y": 4 }
+    ],
     "tracks": [
-      "TT8", "TT2", "TT9", "TT10", "TT13", "TT14"
+      "TT14", "TT13", "TT10", "TT9", "TT2", "TT8"
     ]
   },
   {
     "id": "TR2",
     "color": "#3F51B5",
-    "completion": "20%",
+    "extent": [
+      { "x": 330, "y": 6 },
+      { "x": 550, "y": 5 }
+    ],
     "tracks": [
       "TT11", "TT12", "TT4", "TT5"
     ]

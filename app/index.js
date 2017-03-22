@@ -10,6 +10,7 @@ class Topology {
     this.margin = {top: 20, right: 20, bottom: 20, left: 20};
     this.width = +this.svg.attr('width') - this.margin.left - this.margin.right;
     this.height = +this.svg.attr('height') - this.margin.top - this.margin.bottom;
+    this.defs = this.svg.append('defs');
     this.g = this.svg.append('g').attr('transform', `translate(${this.margin.left},${this.margin.top})`);
 
     // Make ranges
@@ -20,6 +21,10 @@ class Topology {
       .y(d => this.y(d.y));
 
     // Make the data requests and draw
+    this.render();
+  }
+
+  render () {
     d3.json(this.trackDataUrl, (err, data) => {
       if (err)
         console.warn(err);
@@ -33,6 +38,7 @@ class Topology {
 
         this.trainData = data;
         this._drawTrains();
+        this._drawMarkers();
       });
     });
   }
@@ -61,17 +67,27 @@ class Topology {
 
     // Calculate coordinates of train's path
     data = data.map(train => {
-      let coords = [];
+      let coords = [...train.extent];
 
-      train.tracks.forEach(track => {
+      train.tracks.forEach((track, i) => {
+        if (i === 0)
+          return;
+
         let tr = this.trackData.find(trData => (trData.id === track));
 
-        coords.push(...tr.coords);
+        let a0 = coords[coords.length-2].x - tr.coords[0].x;
+        let b0 = coords[coords.length-2].y - tr.coords[0].y;
+        let a1 = coords[coords.length-2].x - tr.coords[1].x;
+        let b1 = coords[coords.length-2].y - tr.coords[1].y;
+        let closest = Math.sqrt(a0*a0 + b0*b0) < Math.sqrt(a1*a1 + b1*b1) ? tr.coords[0] : tr.coords[1];
+
+        coords.splice(coords.length-1, 0, closest);
       });
 
       train.coords = coords;
       return train;
     });
+    console.log(data);
 
     // Draw trains
     this.g.append('g')
@@ -83,18 +99,34 @@ class Topology {
       .attr('train-id', d => d.id)
       .append('path')
       .attr('stroke', d => d.color)
+      .attr('marker-start', d => `url(#train-direction-marker__${d.color})`)
       .attr('d', d => (this.line(d.coords)));
+  }
 
-    document.querySelectorAll('.train > path').forEach(elm => {
-      let len = elm.getTotalLength();
-
-      let id = elm.parentNode.getAttribute('train-id');
-      let completion = this.trainData.find(tn => (tn.id === id)).completion;
-      completion = completion.substr(0, 2)/100;
-
-      elm.setAttribute('stroke-dasharray', len);
-      elm.setAttribute('stroke-dashoffset', len * completion);
+  _drawMarkers () {
+    let colors = [];
+    this.trainData.forEach(train => {
+      if (!colors.includes(train.color)) {
+        colors.push(train.color);
+      }
     });
+
+    this.defs.selectAll('marker')
+      .data(colors).enter()
+      .append('marker')
+      .attr('id', color => `train-direction-marker__${color}`)
+      .attr('viewBox', '0 0 100 100')
+      .attr('refX', '50')
+      .attr('refY', '50')
+      .attr('markerWidth', '8')
+      .attr('markerHeight', '8')
+      .attr('orient', 'auto')
+      .append('path')
+      .attr('d', 'm75.64904,10.92821l-53.14904,42.80909l55,35.33448c-14.78371,-30.32738 -14.87185,-45.55115 -1.85096,-78.14357z')
+      .attr('transform', 'rotate(180 50,50) translate(0,-4)')
+      .attr('fill', color => color)
+      .attr('stroke', '#ffffff')
+      .attr('stroke-width', '5');
   }
 }
 
@@ -102,4 +134,4 @@ var options = {
   trackDataUrl: 'app/track-data.json',
   trainDataUrl: 'app/train-data.json'
 };
-window.addEventListener('load', _ => new Topology(options));
+window.addEventListener('load', _ => (window.topology = new Topology(options)));
