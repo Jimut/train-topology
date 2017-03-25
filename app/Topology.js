@@ -6,8 +6,13 @@ export default class Topology {
     this.trainDataUrl = options.trainDataUrl;
 
     // Initialize svg
-    this.svg = d3.select('svg');
-    this.margin = {top: 20, right: 20, bottom: 20, left: 20};
+    this.svg = d3.select('svg#topology');
+    this.margin = {
+      top: 20,
+      right: 20,
+      bottom: 20,
+      left: 20
+    };
     this.width = +this.svg.attr('width') - this.margin.left - this.margin.right;
     this.height = +this.svg.attr('height') - this.margin.top - this.margin.bottom;
     this.defs = this.svg.append('defs');
@@ -62,31 +67,43 @@ export default class Topology {
       .attr('d', d => (this.line(d.coords)));
   }
 
+  updateTracks (data) {
+    this.trackData.push(data);
+
+    d3.selectAll('.track-wrapper > .track')
+      .data(this.trackData).enter()
+      .append('g')
+      .attr('class', 'track')
+      .attr('track-id', d => d.id)
+      .append('path')
+      .attr('d', d => (this.line(d.coords)));
+  }
+
   _drawTrains () {
     let data = this.trainData;
 
-    // Calculate coordinates of train's path
-    data = data.map(train => {
-      let coords = [...train.extent];
-
-      train.tracks.forEach((track, i) => {
-        if (i === 0)
-          return;
-
-        let tr = this.trackData.find(trData => (trData.id === track));
-
-        let a0 = coords[coords.length-2].x - tr.coords[0].x;
-        let b0 = coords[coords.length-2].y - tr.coords[0].y;
-        let a1 = coords[coords.length-2].x - tr.coords[1].x;
-        let b1 = coords[coords.length-2].y - tr.coords[1].y;
-        let closest = Math.sqrt(a0*a0 + b0*b0) < Math.sqrt(a1*a1 + b1*b1) ? tr.coords[0] : tr.coords[1];
-
-        coords.splice(coords.length-1, 0, closest);
-      });
-
-      train.coords = coords;
-      return train;
-    });
+    // // Calculate coordinates of train's path
+    // data = data.map(train => {
+    //   let coords = [...train.extent];
+    //
+    //   train.tracks.forEach((track, i) => {
+    //     if (i === 0)
+    //       return;
+    //
+    //     let tr = this.trackData.find(trData => (trData.id === track));
+    //
+    //     let a0 = coords[coords.length-2].x - tr.coords[0].x;
+    //     let b0 = coords[coords.length-2].y - tr.coords[0].y;
+    //     let a1 = coords[coords.length-2].x - tr.coords[1].x;
+    //     let b1 = coords[coords.length-2].y - tr.coords[1].y;
+    //     let closest = Math.sqrt(a0*a0 + b0*b0) < Math.sqrt(a1*a1 + b1*b1) ? tr.coords[0] : tr.coords[1];
+    //
+    //     coords.splice(coords.length-1, 0, closest);
+    //   });
+    //
+    //   train.coords = coords;
+    //   return train;
+    // });
 
     // Draw trains
     this.g.append('g')
@@ -99,7 +116,7 @@ export default class Topology {
       .append('path')
       .attr('stroke', d => d.color)
       .attr('marker-start', d => `url(#train-direction-marker__${d.color})`)
-      .attr('d', d => (this.line(d.coords)));
+      .attr('d', d => (this.line(d.data)));
   }
 
   _drawMarkers () {
