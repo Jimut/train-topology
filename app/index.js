@@ -6,3 +6,6 @@ let options = {
   trainDataUrl: 'app/train-data.json'
 };
 window.addEventListener('DOMContentLoaded', _ => (window.topology = new Topology(options)));
+
+
+console.log('This a test! Again Again');

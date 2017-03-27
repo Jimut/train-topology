@@ -1,24 +1,24 @@
-var path = require('path');
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+const HtmlWebpackPluginConfig = new HtmlWebpackPlugin({
+	template: './index.html',
+	filename: 'index.html',
+	inject: 'body'
+});
 
 module.exports = {
-  entry: './app/index.js',
-  output: {
-    filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist')
-  },
-  devtool: 'inline-source-map',
-  module: {
-    rules: [
-      {
-        test: /\.js$/,
-        exclude: /(node_modules|bower_components)/,
-        use: {
-          loader: 'babel-loader',
-          options: {
-            presets: ['env']
-          }
-        }
-      }
-    ]
-  }
+	entry: './app/index.js',
+	output: {
+		path: path.resolve('dist'),
+		filename: 'bundle.js'
+	},
+	module: {
+		loaders: [{
+			test: /\.js$/,
+			loader: 'babel-loader',
+			exclude: /node_modules/
+		}]
+	},
+	plugins: [HtmlWebpackPluginConfig]
 };
